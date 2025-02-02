@@ -1,0 +1,45 @@
+###
+### A complete description of a Prefect Deployment for flow 'elt-pipeline'
+###
+name: elt_dbt
+description: null
+version: 0b4b6dde6b99c6d9a75bc1e256f33720
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: null
+tags: []
+parameters: {}
+schedule: null
+is_schedule_active: null
+infra_overrides: {}
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  block_type_slug: process
+  _block_type_slug: process
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: elt-pipeline
+manifest_path: null
+storage: null
+path: C:\Users\shara\OneDrive\Desktop\iff\pipelines
+entrypoint: data_elt_pipeline:elt_pipeline
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    file_path:
+      title: file_path
+      position: 0
+  required:
+  - file_path
+  definitions: null
+timestamp: '2025-02-02T20:18:03.228684+00:00'
+triggers: []
