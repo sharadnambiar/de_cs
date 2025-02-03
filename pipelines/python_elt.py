@@ -85,10 +85,25 @@ def clean_and_load():
         
         for table in bronze_tables:
             df = pd.read_sql(f"SELECT * FROM bronze_schema.{table}", engine)
+            
+            # Data quality checks based on EDA results
+            df['generation_date'] = pd.to_datetime(df['generation_date'], errors='coerce')
+            df['load_date'] = pd.to_datetime(df['load_date'], errors='coerce')
+            df['batch_number'] = pd.to_numeric(df['batch_number'], errors='coerce').fillna(1)
+
+
+            # Table specific data quality improvements
+            if 'salestransactions' in table.lower():
+                df['transaction_date'] = pd.to_datetime(df['transaction_date'], errors='coerce')
+
+            if 'recipes' in table.lower():
+                df["heat_process"].fillna("NA",inplace=True)
+
             df = df.drop_duplicates()  # Remove  duplicates
-            silver_table = table.replace("_bronze_layer", "_silver_layer")
-            df.to_sql(silver_table, engine, if_exists="replace", index=False, schema="silver_schema")
-            print(f"✅ Data Cleaned and Loaded into Silver Layer: {silver_table}")
+
+            pre_silver_table = table.replace("_bronze_layer", "_pre_silver_layer")
+            df.to_sql(pre_silver_table, engine, if_exists="replace", index=False, schema="silver_schema")
+            print(f"✅ Data Cleaned and Loaded into Pre Silver Layer: {pre_silver_table}")
 
 # Step 3: Run DBT to Transform (Gold Layer)
 def run_dbt():
