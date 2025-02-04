@@ -1,0 +1,12 @@
+
+version: 2
+
+models:
+
+  - name: flavours_silver_layer
+    description: "Flavours silver layer"
+    columns:
+      - name: flavour_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
