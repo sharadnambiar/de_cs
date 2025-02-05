@@ -121,6 +121,9 @@ def clean_and_load():
             
             if 'provider' in table.lower():
                 df.drop_duplicates(subset=['provider_id','name','location_city','location_country'],keep='last',inplace=True)
+            
+            if 'ingredients' in table.lower():
+                df.drop_duplicates(subset=['Ingredient_id','name','chemical_formula','molecular_weight','cost_per_gram','provider_id'],keep='last',inplace=True)
 
             df.drop_duplicates(keep='last',inplace=True)  # Remove  duplicates and retain the last occurance
 
