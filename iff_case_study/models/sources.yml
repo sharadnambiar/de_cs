@@ -6,8 +6,23 @@ sources:
     schema: silver_schema   # The schema where the source tables exist
     tables:
       - name: customers_silver_layer
+      - name: customers_pre_silver_layer
       - name: salestransactions_silver_layer
-  
+      - name: salestransactions_pre_silver_layer
+      - name: recipes_silver_layer
+      - name: recipes_pre_silver_layer
+      - name: ingredients_silver_layer
+      - name: ingredients_pre_silver_layer     
+      - name: flavours_silver_layer 
+      - name: flavours_pre_silver_layer
+      - name: ingredientsrawmaterial_silver_layer
+      - name: ingredientsrawmaterial_pre_silver_layer
+      - name: provider_silver_layer
+      - name: provider_pre_silver_layer
+      - name: rawmaterialtype_silver_layer
+      - name: rawmaterialtype_pre_silver_layer
+      - name: stocks_silver_layer
+      - name: stocks_pre_silver_layer
 
 
 

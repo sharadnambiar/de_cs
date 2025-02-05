@@ -7,7 +7,8 @@
 
 with silver_data as (
 
-    select * from silver_schema.flavours_pre_silver_layer
+    select * 
+    from {{ source('silver_schema', 'flavours_pre_silver_layer') }}
 
 )
 

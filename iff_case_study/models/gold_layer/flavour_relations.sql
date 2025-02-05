@@ -13,8 +13,8 @@ with flavour_pairs as (
         st1.town,
         st1.postal_code,
         count(*) as pair_count
-    from {{ ref('salestransactions_silver_layer') }} st1
-    join {{ ref('salestransactions_silver_layer') }} st2
+    from {{ source('silver_schema', 'salestransactions_silver_layer') }} st1
+    join {{ source('silver_schema', 'salestransactions_silver_layer') }} st2
     on st1.customer_id = st2.customer_id
     and st1.transaction_id != st2.transaction_id
     and st1.transaction_date = st2.transaction_date

@@ -15,7 +15,7 @@ with sales as (
         town,
         postal_code,
         amount_dollar
-    from {{ ref('salestransactions_silver_layer') }}
+    from {{ source('silver_schema', 'salestransactions_silver_layer') }}
 )
 
 select

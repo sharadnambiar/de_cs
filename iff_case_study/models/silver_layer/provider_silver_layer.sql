@@ -7,7 +7,8 @@
 
 with silver_layer as (
 
-    select * from silver_schema.provider_pre_silver_layer
+    select * 
+    from {{ source('silver_schema', 'provider_pre_silver_layer') }}
 )
 
 select *
