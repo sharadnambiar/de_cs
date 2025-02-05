@@ -15,21 +15,21 @@ with sales as (
         town,
         postal_code,
         amount_dollar
-    from {{ ref('salestransactions_silver_layer') }}
+    from {{ source('silver_schema', 'salestransactions_silver_layer') }}
 ),
 
 ingredients as (
     select
         ingredient_id,
         cost_per_gram
-    from {{ ref('ingredients_silver_layer') }}
+    from {{ source('silver_schema', 'ingredients_silver_layer') }}
 ),
 
 recipes as (
     select
         flavour_id,
         ingredient_id
-    from {{ ref('recipes_silver_layer') }}
+    from {{ source('silver_schema', 'recipes_silver_layer') }}
 ),
 
 joined as (

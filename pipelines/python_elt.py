@@ -21,7 +21,7 @@ data_folder_path = 'pipelines\data\data_engineering'
 
 current_dir = os.getcwd()
 parent_dir = os.path.dirname(current_dir)
-dbt_model_path = os.path.join(parent_dir, 'iff_case_study')
+dbt_model_path = os.path.join(parent_dir, 'de_cs\iff_case_study')
 
 
 # Step 1: Extract Data (Load CSV into Bronze Table)
@@ -111,14 +111,18 @@ def clean_and_load():
             # Table specific data quality improvements
             if 'salestransactions' in table.lower():
                 df['transaction_date'] = pd.to_datetime(df['transaction_date'], errors='coerce')
+                df.drop_duplicates(subset=["transaction_id", "customer_id", "flavour_id", "quantity_liters", "transaction_date", "country", "town", "postal_code", "amount_dollar"],keep='last',inplace=True)
 
             if 'recipes' in table.lower():
                 df["heat_process"].fillna("NA",inplace=True)
 
             if 'customers' in table.lower():
                 df.drop(["index"],axis =1,inplace = True)
+            
+            if 'provider' in table.lower():
+                df.drop_duplicates(subset=['provider_id','name','location_city','location_country'],keep='last',inplace=True)
 
-            df = df.drop_duplicates()  # Remove  duplicates
+            df.drop_duplicates(keep='last',inplace=True)  # Remove  duplicates and retain the last occurance
 
             pre_silver_table = table.replace("_bronze_layer", "_pre_silver_layer")
             df.to_sql(pre_silver_table, engine, if_exists="replace", index=False, schema="silver_schema")
@@ -126,7 +130,8 @@ def clean_and_load():
 
 # Step 3: Run DBT to fully construct the Silver Layer
 def run_dbt_silver():
-    result = subprocess.run(["dbt", "run" ,"-m", "tag:silver_layer"], cwd=dbt_model_path, capture_output=True, text=True)
+    print("Running dbt models in : ",dbt_model_path)
+    result = subprocess.run(["dbt", "run","--select","tag:silver_layer"], cwd=dbt_model_path, capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ Error processing Silver layer load!", result.stdout)
         return False
@@ -138,7 +143,7 @@ def run_dbt_silver():
 
 # Step 3: Run DBT to Transform (Gold Layer )
 def run_dbt_gold():
-    result = subprocess.run(["dbt", "run" ,"-m" ,"('aggregated_sales_profits','sales_transactions_with_costs' ,'customer_sales' , 'flavour_relations' , 'sales_improvement_yoy','sales_transactions_agg','top_consumers_potential_clients')","-t","prod"], cwd=dbt_model_path, capture_output=True, text=True)
+    result = subprocess.run(["dbt", "run" ,"--select","tag:gold_layer","-t","prod"], cwd=dbt_model_path, capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ Error processing Gold layer load!", result.stdout)
         return False
@@ -150,7 +155,7 @@ def run_dbt_gold():
 
 # Step 4: Run DBT Tests (For Validation)
 def run_dbt_tests():
-    result = subprocess.run(["dbt", "test" ,"--select tag:silver_layer tag:gold_layer"], cwd=dbt_model_path, capture_output=True, text=True)
+    result = subprocess.run(["dbt", "test" ,"--select" ,"tag:silver_layer" ,"tag:gold_layer"], cwd=dbt_model_path, capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ DBT Test Failures!", result.stdout)
         return False

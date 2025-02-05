@@ -9,11 +9,12 @@ with customers as (
         name,
         location_city,
         location_country
-    from {{ ref('customers_silver_layer') }}
+    from {{ source('silver_schema', 'customers_silver_layer') }}    
+
 ),
 
 sales as (
-    select * from {{ ref('sales_transactions_agg') }}
+    select * from {{ ref('aggregated_sales_transactions') }}
 )
 
 select
