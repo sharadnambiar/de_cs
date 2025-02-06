@@ -16,7 +16,6 @@ DB_NAME = os.getenv("DB_NAME")
 DB_CONN = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@localhost:5432/{DB_NAME}"
 
 # Declaring Data and DBT model paths 
-
 data_folder_path = 'pipelines\data\data_engineering'
 
 current_dir = os.getcwd()
@@ -25,8 +24,10 @@ dbt_model_path = os.path.join(parent_dir, 'de_cs\iff_case_study')
 
 
 # Step 1: Extract Data (Load CSV into Bronze Table)
+
 # Dataset naming convention is *DatasetName*_*GenerationDateYYYYMMDD*_*BatchNumber*.*extension*
 # Extract and enrich data using this additional fields
+
 def ingest_data(data_folder):
     engine = create_engine(DB_CONN)
     
@@ -52,6 +53,7 @@ def ingest_data(data_folder):
                 df['load_date'] = load_date
                 df['generation_date'] = generation_date
                 df['batch_number'] = batch_number
+                df['source_file'] = file_name
                 
                 table_name = f"{dataset_name.lower()}_bronze_layer"
                 df.to_sql(table_name, engine, if_exists="append", index=False, schema="bronze_schema")
@@ -81,12 +83,6 @@ def parse_filename(file_name):
     return dataset_name, generation_date, batch_number
 
 # Step 2: Clean & Load Data into Silver Table
-# def clean_and_load():
-#     engine = create_engine(DB_CONN)
-#     df = pd.read_sql("SELECT * FROM data_staging.bronze_raw_data", engine)
-#     df = df.dropna()  # Remove nulls
-#     df.to_sql("silver_clean_data", engine, if_exists="replace", index=False , schema="data_staging")
-#     print("✅ Data Processed into Silver Layer")
 
 def clean_and_load():
     engine = create_engine(DB_CONN)
@@ -122,8 +118,8 @@ def clean_and_load():
             if 'provider' in table.lower():
                 df.drop_duplicates(subset=['provider_id','name','location_city','location_country'],keep='last',inplace=True)
             
-            if 'ingredients' in table.lower():
-                df.drop_duplicates(subset=['Ingredient_id','name','chemical_formula','molecular_weight','cost_per_gram','provider_id'],keep='last',inplace=True)
+            if 'ingredients_' in table.lower():
+                df.drop_duplicates(subset=['ingredient_id','name','chemical_formula','molecular_weight','cost_per_gram','provider_id'],keep='last',inplace=True)
 
             df.drop_duplicates(keep='last',inplace=True)  # Remove  duplicates and retain the last occurance
 
@@ -131,7 +127,9 @@ def clean_and_load():
             df.to_sql(pre_silver_table, engine, if_exists="replace", index=False, schema="silver_schema")
             print(f"✅ Data Cleaned and Loaded into Pre Silver Layer: {pre_silver_table}")
 
+
 # Step 3: Run DBT to fully construct the Silver Layer
+
 def run_dbt_silver():
     print("Running dbt models in : ",dbt_model_path)
     result = subprocess.run(["dbt", "run","--select","tag:silver_layer"], cwd=dbt_model_path, capture_output=True, text=True)
@@ -142,9 +140,10 @@ def run_dbt_silver():
         print("✅ Data Ingested into Silver Layer \n", result.stdout)
         return True
     
-    #print("✅ DBT Transformation Completed\n", result.stdout)
+
 
 # Step 3: Run DBT to Transform (Gold Layer )
+
 def run_dbt_gold():
     result = subprocess.run(["dbt", "run" ,"--select","tag:gold_layer","-t","prod"], cwd=dbt_model_path, capture_output=True, text=True)
     if result.returncode != 0:
@@ -154,7 +153,7 @@ def run_dbt_gold():
         print("✅ DBT Transformation Completed\n", result.stdout)
         return True
     
-    #print("✅ DBT Transformation Completed\n", result.stdout)
+
 
 # Step 4: Run DBT Tests (For Validation)
 def run_dbt_tests():
