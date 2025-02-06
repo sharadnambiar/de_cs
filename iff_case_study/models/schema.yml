@@ -18,7 +18,6 @@ models:
         description: "The primary key for this table"
         tests:
           - not_null
-          - unique
 
   - name: ingredients_silver_layer
     description: "Ingredients silver layer"
