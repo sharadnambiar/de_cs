@@ -1,0 +1,81 @@
+
+version: 2
+
+models:
+
+  - name: flavours_silver_layer
+    description: "Flavours silver layer"
+    columns:
+      - name: flavour_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+
+  - name: customers_silver_layer
+    description: "Customers silver layer"
+    columns:
+      - name: customer_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+
+  - name: ingredients_silver_layer
+    description: "Ingredients silver layer"
+    columns:
+      - name: ingredient_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+
+
+  - name: ingredientsrawmaterial_silver_layer
+    description: "Ingredient rawmaterial silver layer"
+    columns:
+      - name: ingredient_rawmaterial_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+
+  - name: provider_silver_layer
+    description: "Provider silver layer"
+    columns:
+      - name: provider_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+          - unique
+
+  - name: rawmaterialtype_silver_layer
+    description: "raw material type silver layer"
+    columns:
+      - name: raw_material_type_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+
+
+  - name: recipes_silver_layer
+    description: "Flavours silver layer"
+    columns:
+      - name: recipe_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+
+
+  - name: salestransactions_silver_layer
+    description: "Sales transactions silver layer"
+    columns:
+      - name: transaction_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
+          - unique
+
+  - name: stocks_silver_layer
+    description: "Stocks silver layer"
+    columns:
+      - name: stock_id
+        description: "The primary key for this table"
+        tests:
+          - not_null
