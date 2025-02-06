@@ -9,7 +9,8 @@ with customers as (
         name,
         location_city,
         location_country
-    from {{ source('silver_schema', 'customers_silver_layer') }}    
+    from {{ source('silver_schema', 'customers_silver_layer') }}
+    where is_current = TRUE
 
 ),
 
